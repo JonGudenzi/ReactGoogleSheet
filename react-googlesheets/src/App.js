@@ -11,13 +11,11 @@ const App = () => {
   const [Date, setDate] = useState("");
   const [Freight_Company, setFreight_Company] = useState("");
   const [TotalBoxNumber, setTotalBoxNumber] = useState("");
-  // const [TotalVendors, setTotalVendors] = useState('');
-  const [VendorName, setVendorName] = useState("");
+  const [TotalVendors, setTotalVendors] = useState('');
+  const [VendorName, setVendorName] = useState([{ vendor: "" }]);
   const [VendorBoxAmount, setVendorBoxAmount] = useState("");
 
-  const dateChangeHandler = (event) => {
-    setDate(event.target.value);
-  };
+
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -26,16 +24,16 @@ const App = () => {
       Date: Date,
       Freight_Company: Freight_Company,
       TotalBoxNumber: TotalBoxNumber,
-      // TotalVendors: TotalVendors,
+      TotalVendors: TotalVendors,
       VendorName: VendorName,
-      VendorBoxAmount: VendorBoxAmount,
+      // VendorBoxAmount: VendorBoxAmount,
     };
 
     setDate("");
     setFreight_Company("");
     setTotalBoxNumber("");
-    // setTotalVendors('');
-    setVendorName("");
+    setTotalVendors('');
+    // setVendorName("");
     setVendorBoxAmount("");
 
     const postToAPIS = () => {
@@ -61,59 +59,86 @@ const App = () => {
     }
   };
 
-  const addNewVendor = (e) => {
-    e.preventDefault();
-    alert("working?");
+  const handleAddNewVendor = () => {
+    setVendorName([...VendorName, { vendor: "" }]);
   };
 
-  console.log(addNewVendor);
+  const handleRemoveVendor = (index) => {
+    const list = [...VendorName];
+    list.splice(index, 1);
+    setVendorName(list);
+  }
+
+  const handleAddVendorChange = (e, index) => {
+    const {name, value} = e.target
+    const list = [...VendorName];
+    list[index][name] = value;
+    setVendorName(list)
+  }
+
+  
+
+  
+
 
   return (
     <Container fluid className="container">
       <div id="flexParent">
-      <Header as="h1" >IE Incoming Shipment</Header>
-      <Form className="form" onSubmit={handleSubmit}>
-        <Form.Field>
-          <label>Date</label>
-          <input
-            value={Date}
-            placeholder="Enter Date"
-            onChange={dateChangeHandler}
-          />
-        </Form.Field>
-
-        <Form.Field>
-          <label>Freight Company</label>
-          <input
-            value={Freight_Company}
-            placeholder="Enter Freight Company"
-            onChange={(e) => setFreight_Company(e.target.value)}
-          />
-        </Form.Field>
-
-        <Form.Field>
-          <label>Total Boxes</label>
-          <input
-            value={TotalBoxNumber}
-            placeholder="Enter Total Box Amount"
-            onChange={(e) => setTotalBoxNumber(e.target.value)}
-          />
-        </Form.Field>
-        <Button color="blue" type="submit">
-          Submit
-        </Button>
-        </Form>
-
-
-          <Form className="form flexAddAnotherVendor" onSubmit={addNewVendor} >
-          <Form.Field className="vendorNameAndBoxAmount">
-            <label>Vendor Name</label>
+        <Header as="h1" >IE Incoming Shipment</Header>
+        <Form className="form" onSubmit={handleSubmit}>
+          <Form.Field>
+            <label>Date</label>
             <input
-              value={VendorName}
-              placeholder="Enter Vendor name"
-              onChange={(e) => setVendorName(e.target.value)}
+              value={Date}
+              placeholder="Enter Date"
+              onChange={(e) => setDate(e.target.value)}
             />
           </Form.Field>
+
+          <Form.Field>
+            <label>Freight Company</label>
+            <input
+              value={Freight_Company}
+              placeholder="Enter Freight Company"
+              onChange={(e) => setFreight_Company(e.target.value)}
+            />
+          </Form.Field>
+
+          <Form.Field>
+            <label>Total Boxes</label>
+            <input
+              value={TotalBoxNumber}
+              placeholder="Enter Total Box Amount"
+              onChange={(e) => setTotalBoxNumber(e.target.value)}
+            />
+          </Form.Field>
+          <Button color="blue" type="submit">
+            Submit
+          </Button>
+        </Form>
+
+        {/* -------------Add Another Vendor Form-------------------- */}
+
+
+        <Form className="form flexAddAnotherVendor" >
+          <div className="vendorNameAndBoxAmount">
+            {VendorName.map((singleVendor, index) => (
+              <Form.Field key={index}>
+                <label>Vendor Name</label>
+                <input
+                  name="vendor"
+                  id="vendor"
+                  value={singleVendor.vendor}
+                  placeholder="Enter Vendor name"
+                  onChange={(e) => handleAddVendorChange(e, index)}
+                  
+                />
+                
+                
+              </Form.Field>
+            ))}
+
+          </div>
 
           <Form.Field className="vendorNameAndBoxAmount">
             <label>Boxes</label>
@@ -122,17 +147,19 @@ const App = () => {
               placeholder="Enter Amount of Boxes"
               onChange={(e) => setVendorBoxAmount(e.target.value)}
             />
+            <Button onClick={handleRemoveVendor} color="blue" type="submit">
+            <span>Remove Vendor</span>
+          </Button>
           </Form.Field>
-
-          <Button>
+          <Button onClick={handleAddNewVendor} color="blue" type="submit">
             <span>Add Another Vendor</span>
           </Button>
-          </Form>
-        
-        
-      
+        </Form>
+
+
+
       </div>
-      
+
     </Container>
   );
 };
